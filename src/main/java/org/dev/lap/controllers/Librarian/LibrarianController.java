@@ -16,22 +16,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 @RequestMapping("/api/librarian")
 public class LibrarianController {
     @Autowired
     private LibrarianService librarianService;
+    
     @PostMapping("/librarian_login")
-    public ResponseEntity<LibrarianLoginResponse> loginLibrarian(@RequestBody LibrarianLoginRegister librarianLoginRegister) throws MissingFieldException, UnmatchedException {
-        LibrarianLoginResponse response = librarianService.loginLibrarian(librarianLoginRegister);
-        return  ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<LibrarianLoginResponse> loginLibrarian(@RequestBody LibrarianLoginRegister librarianLoginRegister) {
+        try {
+            LibrarianLoginResponse response = librarianService.loginLibrarian(librarianLoginRegister);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (MissingFieldException | UnmatchedException e) {
+            LibrarianLoginResponse errorResponse = new LibrarianLoginResponse();
+            errorResponse.setMessage("Login failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        } catch (Exception e) {
+            LibrarianLoginResponse errorResponse = new LibrarianLoginResponse();
+            errorResponse.setMessage("Login failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
-
 
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> users = librarianService.getAllUsers();
-        return ResponseEntity.ok(users);
+        try {
+            List<UserResponse> users = librarianService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
-
 }

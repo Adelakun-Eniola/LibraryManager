@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -62,12 +63,35 @@ public class BookServiceImpl implements BookService{
         book.setCopyIds(bookCopyIds);
         book = bookRepository.save(book);
         return BookMapper.mapToBookResponse(book);
-
     }
 
+    @Override
+    public List<BookResponse> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(book -> {
+                    // Update available quantity based on available copies
+                    List<BookCopy> availableCopies = bookCopyRepository.findAvailableCopiesByBookId(book.getBookId());
+                    book.setAvailableQuantity(availableCopies.size());
+                    return BookMapper.mapToBookResponse(book);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public BookResponse getBookById(String bookId) {
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            // Update available quantity based on available copies
+            List<BookCopy> availableCopies = bookCopyRepository.findAvailableCopiesByBookId(book.getBookId());
+            book.setAvailableQuantity(availableCopies.size());
+            return BookMapper.mapToBookResponse(book);
+        }
+        return null;
+    }
 
     private String generateUniqueBookCopyId() {
         return UUID.randomUUID().toString();
     }
-
 }

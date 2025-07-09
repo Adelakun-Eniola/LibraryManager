@@ -1,7 +1,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5070';
 
 // Create axios instance
 const api = axios.create({
@@ -55,7 +55,8 @@ export const librarianAPI = {
 // Book API calls
 export const bookAPI = {
   register: (data) => api.post('/api/register/book', data),
-  getAll: () => api.get('/api/user/getAllBooks'),
+  getAll: () => api.get('/api/books'), // Updated to use the new book endpoint
+  getById: (bookId) => api.get(`/api/books/${bookId}`), // New endpoint for getting single book
 };
 
 // User API calls
@@ -63,7 +64,7 @@ export const userAPI = {
   register: (data) => api.post('/api/register/user', data),
   login: (data) => api.post('/api/login/user', data),
   borrowBook: (bookId) => api.post(`/api/user/borrow/${bookId}`),
-  getAllBooks: () => api.get('/api/user/getAllBooks'),
+  getAllBooks: () => api.get('/api/user/getAllBooks'), // Keep this for user-specific book access
 };
 
 // Authentication helpers

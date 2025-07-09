@@ -66,9 +66,38 @@ A modern, responsive, and animated frontend for the Library Management System bu
 - **React Hot Toast** - Toast notifications
 - **Context API** - State management
 
+## Backend Fixes Applied
+
+### 🔧 **Fixed Backend Issues:**
+
+1. **Added Missing Book Endpoints**
+   - ✅ Added `GET /api/books` - Retrieve all books
+   - ✅ Added `GET /api/books/{bookId}` - Get book by ID
+   - ✅ Updated BookService interface and implementation
+
+2. **Enhanced CORS Configuration**
+   - ✅ Added global CORS configuration class
+   - ✅ Added `@CrossOrigin` annotations to all controllers
+   - ✅ Configured for React development ports (3000, 3001)
+
+3. **Improved Error Handling**
+   - ✅ Added try-catch blocks to all controller methods
+   - ✅ Consistent error response formats
+   - ✅ Proper HTTP status codes
+
+4. **Updated Application Configuration**
+   - ✅ Enhanced `application.properties` with development settings
+   - ✅ Added detailed logging configuration
+   - ✅ Configured error message details
+
+5. **Fixed API Consistency**
+   - ✅ Corrected repository method calls in BookService
+   - ✅ Updated frontend API calls to use correct endpoints
+   - ✅ Standardized response handling
+
 ## API Endpoints Integration
 
-The frontend integrates with the following Spring Boot API endpoints:
+The frontend integrates with the following Spring Boot API endpoints (Backend running on **port 5070**):
 
 ### Admin APIs
 - `POST /api/admin/register` - Register new admin
@@ -82,13 +111,14 @@ The frontend integrates with the following Spring Boot API endpoints:
 
 ### Book APIs
 - `POST /api/register/book` - Add new book (librarian only)
-- `GET /api/user/getAllBooks` - Get all books
+- `GET /api/books` - Get all books ✨ **NEW**
+- `GET /api/books/{bookId}` - Get book by ID ✨ **NEW**
 
 ### User APIs
 - `POST /api/register/user` - User registration
 - `POST /api/login/user` - User login
 - `POST /api/user/borrow/{bookId}` - Borrow book
-- `GET /api/user/getAllBooks` - Get all books
+- `GET /api/user/getAllBooks` - Get all books (user context)
 
 ## Getting Started
 
@@ -96,7 +126,8 @@ The frontend integrates with the following Spring Boot API endpoints:
 
 - Node.js (v16 or higher)
 - npm or yarn
-- Running Spring Boot backend (on port 8080)
+- Running Spring Boot backend (on **port 5070**) ⚠️ **Updated Port**
+- MongoDB running on localhost:27017
 
 ### Installation
 
@@ -114,7 +145,7 @@ The frontend integrates with the following Spring Boot API endpoints:
 3. **Configure environment variables**
    Create a `.env` file in the root directory:
    ```env
-   REACT_APP_API_URL=http://localhost:8080
+   REACT_APP_API_URL=http://localhost:5070
    ```
 
 4. **Start the development server**
@@ -125,6 +156,8 @@ The frontend integrates with the following Spring Boot API endpoints:
 5. **Open your browser**
    Navigate to `http://localhost:3000`
 
+6. **Ensure your Spring Boot backend is running on `http://localhost:5070`**
+
 ### Building for Production
 
 ```bash
@@ -132,6 +165,26 @@ npm run build
 ```
 
 This creates a `build` folder with optimized production files.
+
+## Backend Setup (Fixed)
+
+To run the backend with all fixes:
+
+1. **Ensure MongoDB is running**
+   ```bash
+   mongod --dbpath /path/to/your/db
+   ```
+
+2. **Start the Spring Boot application**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   
+   The backend will start on **port 5070**
+
+3. **Verify CORS is working**
+   - Check browser network tab for successful OPTIONS requests
+   - No CORS errors should appear in console
 
 ## Project Structure
 
@@ -151,10 +204,30 @@ src/
 ├── context/
 │   └── AuthContext.js
 ├── services/
-│   └── api.js
+│   └── api.js (Updated with correct port)
 ├── App.js
 ├── index.js
 └── index.css
+```
+
+## Backend Structure (Fixed)
+
+```
+src/main/java/org/dev/lap/
+├── config/
+│   └── CorsConfig.java (NEW - Global CORS configuration)
+├── controllers/
+│   ├── Admin/AdminController.java (Fixed CORS & error handling)
+│   ├── Book/BookController.java (Added new endpoints)
+│   ├── Borrower/UserController.java (Fixed CORS & error handling)
+│   ├── Librarian/LibrarianController.java (Fixed CORS & error handling)
+│   └── TransactionLog/TransactionLogController.java (Fixed CORS)
+├── services/
+│   └── Book/
+│       ├── BookService.java (Added new methods)
+│       └── BookServiceImpl.java (Implemented new methods)
+└── resources/
+    └── application.properties (Enhanced configuration)
 ```
 
 ## Usage Guide
@@ -212,6 +285,26 @@ src/
 - **Form validation** with real-time feedback
 - **Network errors** with user-friendly messages
 - **Authentication errors** with automatic logout
+- **CORS issues** resolved with proper configuration
+
+## Troubleshooting
+
+### Common Issues:
+
+1. **CORS Errors**
+   - ✅ Fixed with global CORS configuration
+   - Ensure backend is running on port 5070
+   - Check browser console for specific errors
+
+2. **API Connection Issues**
+   - Verify backend is running on `http://localhost:5070`
+   - Check network tab in browser developer tools
+   - Ensure MongoDB is running
+
+3. **Authentication Issues**
+   - Clear browser local storage
+   - Check JWT token expiration
+   - Verify role-based access
 
 ## Contributing
 
@@ -230,5 +323,12 @@ This project is licensed under the MIT License.
 For support, email support@libraryms.com or create an issue on GitHub.
 
 ---
+
+**✨ Latest Updates:**
+- Fixed all backend CORS issues
+- Added missing book management endpoints
+- Enhanced error handling across all controllers
+- Updated API port configuration (5070)
+- Improved application configuration
 
 Built with ❤️ using React and modern web technologies.
